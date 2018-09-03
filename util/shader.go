@@ -40,22 +40,32 @@ func (s *Shader) Use() {
 	gl.UseProgram(s.ID)
 }
 
-func (s *Shader) SetBool(name *string, value bool) {
+func (s *Shader) getLocation(name string) int32 {
+	return gl.GetUniformLocation(s.ID, gl.Str(name+"\x00"))
+}
+
+func (s *Shader) SetBool(name string, value bool) {
 	i := int32(0)
 	if value {
 		i = 1
 	}
-	gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(*name)), i)
+	gl.Uniform1i(s.getLocation(name), i)
 }
 
 func (s *Shader) SetInt(name string, value int32) {
-	gl.Uniform1i(gl.GetUniformLocation(s.ID, gl.Str(name)), value)
+	gl.Uniform1i(s.getLocation(name), value)
 }
 func (s *Shader) SetFloat(name string, value float32) {
-	gl.Uniform1f(gl.GetUniformLocation(s.ID, gl.Str(name)), value)
+	gl.Uniform1f(s.getLocation(name), value)
 }
 func (s *Shader) SetMat4(name string, mat *mgl32.Mat4)  {
-	gl.UniformMatrix4fv(gl.GetUniformLocation(s.ID,gl.Str(name)),1,false,&mat[0])
+	gl.UniformMatrix4fv(s.getLocation(name),1,false,&mat[0])
+}
+func (s *Shader) SetVec3v(name string, vec3s mgl32.Vec3) {
+	gl.Uniform3fv(s.getLocation(name),1,&vec3s[0])
+}
+func (s *Shader) SetVec3(name string, x,y,z float32) {
+	gl.Uniform3f(s.getLocation(name),x,y,z)
 }
 
 func readString(path string) string {
